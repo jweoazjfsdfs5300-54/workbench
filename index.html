@@ -1,0 +1,1129 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#5a9fb3">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="我的工作台">
+<title>我的个人工作台</title>
+<link rel="manifest" href='data:application/manifest+json,{"name":"我的个人工作台","short_name":"工作台","start_url":".","display":"standalone","background_color":"#dcebf2","theme_color":"#5a9fb3","icons":[{"src":"data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27%3E%3Ctext y=%2780%27 font-size=%2780%27%3E%F0%9F%8D%8A%3C/text%3E%3C/svg%3E","sizes":"any","type":"image/svg+xml"}]}'>
+<style>
+/* ===================== 设计系统 Design Tokens ===================== */
+:root{
+  --bg-grad: linear-gradient(160deg,#dcebf2 0%, #f4ecee 50%, #e3f1ea 100%);
+  --card-bg: linear-gradient(160deg, rgba(255,255,255,0.80) 0%, rgba(228,243,238,0.66) 100%);
+  --card-brd: rgba(120,150,160,0.20);
+  --card-shadow: 0 8px 24px rgba(90,140,150,0.10);
+  --text: #3f4f4d;
+  --sub: #7c8c89;
+  --pink1: #7fb6cf;
+  --pink2: #8cc6a4;
+  --btn-grad: linear-gradient(135deg,#7fb6cf,#8cc6a4);
+  --btn-grad-hover: linear-gradient(135deg,#6fa9c4,#7db994);
+  --accent: #5a9fb3;
+  --line: rgba(120,150,160,0.18);
+  --nav-bg: rgba(255,255,255,0.55);
+  --nav-active: linear-gradient(135deg,#7fb6cf,#8cc6a4);
+  --nav-hover: rgba(120,170,185,0.16);
+  --input-bg: rgba(255,255,255,0.85);
+  --danger: #d98a8a;
+  --ok: #6fb98e;
+  --chip: rgba(120,170,185,0.16);
+  --mark: #d8ecc8;
+  --hero-grad: linear-gradient(135deg,#e7f2f7 0%, #eef7ef 100%);
+  --glow: rgba(90,159,179,0.32);
+}
+[data-theme="dark"]{
+  --bg-grad: linear-gradient(160deg,#1d2a30 0%, #2a2227 50%, #1e2b25 100%);
+  --card-bg: rgba(255,255,255,0.06);
+  --card-brd: rgba(150,180,190,0.14);
+  --card-shadow: 0 8px 24px rgba(0,0,0,0.30);
+  --text: #dde8e6;
+  --sub: #9bb0ad;
+  --pink1: #6fa9c4;
+  --pink2: #7db994;
+  --btn-grad: linear-gradient(135deg,#3f7e96,#4f8f6b);
+  --btn-grad-hover: linear-gradient(135deg,#36839c,#4a9a70);
+  --accent: #7cc0d4;
+  --line: rgba(150,180,190,0.13);
+  --nav-bg: rgba(255,255,255,0.05);
+  --nav-active: linear-gradient(135deg,#3f7e96,#4f8f6b);
+  --nav-hover: rgba(150,190,200,0.12);
+  --input-bg: rgba(255,255,255,0.08);
+  --chip: rgba(150,190,200,0.12);
+  --mark: #b9c98a;
+  --hero-grad: linear-gradient(135deg,#22323a 0%, #21302b 100%);
+  --glow: rgba(124,192,212,0.40);
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;overflow-x:hidden;width:100%;}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
+  background:var(--bg-grad);
+  background-attachment:fixed;
+  color:var(--text);
+  min-height:100vh;
+  -webkit-font-smoothing:antialiased;
+  transition:background .4s,color .3s;
+}
+button{font-family:inherit;cursor:pointer;border:none;}
+a{color:var(--accent);text-decoration:none;}
+
+/* ===================== 布局 ===================== */
+.app{display:flex;min-height:100vh;width:100%;}
+.sidebar{
+  width:78px;flex:0 0 78px;
+  background:var(--nav-bg);
+  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+  border-right:1px solid var(--line);
+  display:flex;flex-direction:column;align-items:center;
+  padding:14px 6px;gap:6px;position:sticky;top:0;height:100vh;
+  overflow-y:auto;overflow-x:hidden;
+}
+.nav-group{display:flex;flex-direction:column;align-items:center;gap:4px;width:100%;}
+.nav-label{font-size:9px;color:var(--sub);margin:10px 0 2px;letter-spacing:1px;writing-mode:initial;text-align:center;line-height:1.2;}
+.nav-item{
+  width:100%;display:flex;flex-direction:column;align-items:center;gap:2px;
+  padding:8px 2px;border-radius:14px;color:var(--sub);
+  background:transparent;transition:all .2s;font-size:10px;line-height:1.1;
+}
+.nav-item .ico{font-size:20px;line-height:1;}
+.nav-item:hover{background:var(--nav-hover);color:var(--text);}
+.nav-item.active{background:var(--nav-active);color:#fff;box-shadow:0 6px 14px var(--glow);}
+.nav-sep{height:1px;width:54px;background:var(--line);margin:6px 0;}
+
+.content{flex:1;min-width:0;display:flex;flex-direction:column;padding:0 22px 40px;}
+.topbar{
+  display:flex;align-items:flex-start;justify-content:space-between;
+  padding:22px 4px 16px;position:sticky;top:0;z-index:20;
+  background:linear-gradient(to bottom,var(--bg-grad),transparent);
+}
+.topbar h1{margin:0;font-size:26px;font-weight:800;letter-spacing:1px;}
+.topbar .sub{margin-top:4px;font-size:13px;color:var(--sub);}
+.theme-btn{
+  width:44px;height:44px;border-radius:50%;background:var(--btn-grad);color:#fff;
+  font-size:20px;box-shadow:0 6px 16px var(--glow);flex:0 0 auto;
+  transition:transform .2s;
+}
+.theme-btn:hover{transform:rotate(-15deg) scale(1.05);}
+
+.pages{flex:1;min-width:0;}
+.page{display:none;animation:fade .35s ease;}
+.page.active{display:block;}
+@keyframes fade{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:none;}}
+
+/* ===================== 通用卡片与控件 ===================== */
+.card{
+  background:var(--card-bg);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+  border:1px solid var(--card-brd);border-radius:18px;box-shadow:var(--card-shadow);
+  padding:18px;margin-bottom:16px;min-width:0;
+}
+.card h2{margin:0 0 12px;font-size:17px;display:flex;align-items:center;gap:8px;}
+.card h3{margin:0 0 8px;font-size:14px;color:var(--sub);font-weight:600;}
+.grid{display:grid;gap:14px;min-width:0;}
+.grid-2{grid-template-columns:repeat(auto-fit,minmax(240px,1fr));}
+.grid-3{grid-template-columns:repeat(auto-fit,minmax(200px,1fr));}
+.grid-4{grid-template-columns:repeat(auto-fit,minmax(150px,1fr));}
+
+.btn{
+  background:var(--btn-grad);color:#fff;border-radius:12px;padding:10px 16px;font-size:14px;font-weight:600;
+  box-shadow:0 6px 16px var(--glow);transition:all .2s;display:inline-flex;align-items:center;gap:6px;
+}
+.btn:hover{background:var(--btn-grad-hover);transform:translateY(-1px);}
+.btn.ghost{background:var(--chip);color:var(--text);box-shadow:none;}
+.btn.ghost:hover{background:var(--nav-hover);}
+.btn.sm{padding:6px 12px;font-size:12px;border-radius:10px;}
+.btn.danger{background:linear-gradient(135deg,#e3a0a0,#cf8484);box-shadow:none;}
+
+input,select,textarea{
+  width:100%;padding:10px 12px;border-radius:12px;border:1px solid var(--line);
+  background:var(--input-bg);color:var(--text);font-size:14px;font-family:inherit;min-width:0;
+}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--chip);}
+textarea{resize:vertical;min-height:80px;line-height:1.6;}
+label.fld{display:block;font-size:12px;color:var(--sub);margin:8px 0 4px;}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;}
+.row > *{min-width:0;}
+.chip{display:inline-flex;align-items:center;gap:5px;background:var(--chip);color:var(--text);border-radius:999px;padding:4px 12px;font-size:12px;}
+
+/* ===================== 首页 ===================== */
+.hero-title{font-size:22px;font-weight:800;}
+.checkin-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:12px;}
+.checkin{
+  background:var(--card-bg);border:1px solid var(--card-brd);border-radius:16px;padding:14px;
+  display:flex;flex-direction:column;align-items:center;gap:8px;cursor:pointer;transition:all .2s;text-align:center;
+}
+.checkin .emo{font-size:26px;}
+.checkin .nm{font-size:13px;}
+.checkin.done{background:var(--nav-active);color:#fff;border-color:transparent;box-shadow:0 6px 16px var(--glow);}
+.checkin.done .nm{color:#fff;}
+.stat{display:flex;align-items:center;gap:12px;background:var(--card-bg);border:1px solid var(--card-brd);border-radius:16px;padding:14px;}
+.stat .ico{font-size:30px;flex:0 0 auto;}
+.stat .num{font-size:24px;font-weight:800;line-height:1;}
+.stat .lb{font-size:12px;color:var(--sub);margin-top:4px;}
+.hero-home{background:var(--hero-grad);border:1px solid var(--card-brd);box-shadow:var(--card-shadow);}
+.home-date{margin-top:6px;font-size:15px;opacity:.95;}
+.home-clock{margin-top:4px;font-size:30px;font-weight:800;letter-spacing:1px;font-variant-numeric:tabular-nums;}
+.daily-quote{margin-top:16px;padding:14px 18px;background:var(--chip);border-radius:14px;font-size:16px;line-height:1.7;}
+.daily-quote .qmark{font-size:22px;opacity:.7;}
+.daily-quote .qhint{margin-top:8px;font-size:12px;opacity:.85;text-align:right;}
+.tag-pill{border:1px solid var(--card-brd);padding:1px 8px;border-radius:8px;}
+.politics-card{background:var(--card-bg);border:1px solid var(--card-brd);border-radius:16px;padding:16px;}
+.politics-card .ph{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:8px;}
+.politics-card .ptag{font-size:12px;background:var(--nav-hover);color:var(--accent);padding:2px 10px;border-radius:999px;font-weight:600;}
+.politics-card .pdate{font-size:12px;color:var(--sub);}
+.politics-card .ptitle{font-size:17px;font-weight:800;margin-bottom:8px;}
+.politics-card .pbody{font-size:14px;line-height:1.7;color:var(--text);}
+.politics-card .pdetail{font-size:13px;line-height:1.7;color:var(--sub);margin:8px 0 12px;}
+.politics-card .pnote{font-size:11px;color:var(--sub);margin-top:10px;opacity:.8;}
+.search-box{position:relative;}
+.search-results{margin-top:10px;display:flex;flex-direction:column;gap:8px;}
+.search-results .r{background:var(--card-bg);border:1px solid var(--card-brd);border-radius:12px;padding:10px 14px;cursor:pointer;}
+.search-results .r:hover{background:var(--nav-hover);}
+.search-results .r .t{font-weight:600;}
+.search-results .r .m{font-size:12px;color:var(--sub);}
+
+/* ===================== 待办 ===================== */
+.todo-item{display:flex;align-items:center;gap:12px;padding:12px 14px;background:var(--card-bg);border:1px solid var(--card-brd);border-radius:14px;margin-bottom:10px;}
+.todo-item .ck{width:22px;height:22px;border-radius:7px;border:2px solid var(--accent);flex:0 0 auto;display:flex;align-items:center;justify-content:center;color:#fff;font-size:14px;cursor:pointer;background:transparent;}
+.todo-item.done .ck{background:var(--accent);}
+.todo-item.done .tx{text-decoration:line-through;color:var(--sub);}
+.todo-item .tx{flex:1;min-width:0;word-break:break-word;}
+.todo-item .dt{font-size:12px;color:var(--sub);flex:0 0 auto;}
+.todo-item .del{background:none;color:var(--danger);font-size:16px;flex:0 0 auto;}
+
+/* ===================== 英语 ===================== */
+.en-tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;}
+.en-tab{padding:8px 16px;border-radius:999px;background:var(--chip);color:var(--text);font-size:13px;font-weight:600;}
+.en-tab.active{background:var(--nav-active);color:#fff;}
+.en-date{font-size:13px;color:var(--sub);margin-bottom:10px;}
+.word-card{background:var(--card-bg);border:1px solid var(--card-brd);border-radius:14px;padding:12px 14px;display:flex;flex-direction:column;gap:4px;}
+.word-card .w{font-size:18px;font-weight:700;display:flex;align-items:center;gap:8px;}
+.word-card .p{font-size:13px;color:var(--sub);}
+.word-card .m{font-size:14px;}
+.spk{background:none;color:var(--accent);font-size:16px;}
+.article-body{line-height:1.9;font-size:15px;}
+.article-body mark{background:var(--mark);padding:0 3px;border-radius:4px;color:#000;}
+.hard-sentence{background:var(--card-bg);border:1px solid var(--card-brd);border-radius:14px;padding:16px;line-height:1.8;margin-top:4px;}
+.hard-sentence .hs-en{font-size:17px;font-weight:700;display:flex;align-items:center;gap:8px;margin-bottom:8px;}
+.hard-sentence .hs-zh{font-size:14px;margin-bottom:12px;}
+.hard-sentence .hs-block{margin-top:10px;}
+.hard-sentence .hs-label{font-size:13px;font-weight:700;color:var(--accent);margin-bottom:4px;}
+.hard-sentence .hs-parse,.hard-sentence .hs-words{font-size:13px;color:var(--sub);}
+
+/* ===================== 阅读 ===================== */
+.book-hero{display:flex;gap:16px;flex-wrap:wrap;align-items:flex-start;}
+.book-hero .cover{width:90px;height:120px;border-radius:12px;background:var(--btn-grad);display:flex;align-items:center;justify-content:center;font-size:40px;color:#fff;flex:0 0 auto;}
+.book-list-item{background:var(--card-bg);border:1px solid var(--card-brd);border-radius:14px;padding:14px;margin-bottom:10px;}
+.book-list-item .bt{font-weight:700;font-size:15px;}
+.book-status{font-size:11px;padding:2px 10px;border-radius:999px;}
+.st-reading{background:rgba(217,138,138,0.16);color:#c87d7d;}
+.st-done{background:#d9f6e4;color:#2fa968;}
+
+/* ===================== 日记 ===================== */
+.diary-item{background:var(--card-bg);border:1px solid var(--card-brd);border-radius:14px;padding:14px;margin-bottom:10px;position:relative;}
+.diary-item .dh{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:6px;}
+.diary-item .cat{font-size:11px;padding:2px 10px;border-radius:999px;background:var(--chip);}
+.diary-item .locked-body{filter:blur(6px);user-select:none;color:var(--sub);}
+.meta-row{display:flex;gap:14px;flex-wrap:wrap;align-items:center;margin-bottom:10px;font-size:13px;color:var(--sub);}
+
+/* ===================== 健康 ===================== */
+.health-stat{font-size:30px;font-weight:800;color:var(--accent);}
+.water-cups{display:flex;gap:6px;flex-wrap:wrap;}
+.cup{width:26px;height:34px;border-radius:0 0 12px 12px;border:2px solid var(--accent);opacity:.3;}
+.cup.full{background:var(--accent);opacity:1;}
+.habit-item{display:flex;align-items:center;gap:10px;background:var(--card-bg);border:1px solid var(--card-brd);border-radius:12px;padding:10px 12px;margin-bottom:8px;}
+.habit-item .streak{font-size:12px;color:var(--sub);}
+.review-box{width:100%;min-height:160px;font-family:inherit;line-height:1.7;}
+
+/* ===================== 记账 / 基金 ===================== */
+.money-summary{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;}
+.sum-box{background:var(--card-bg);border:1px solid var(--card-brd);border-radius:14px;padding:14px;text-align:center;}
+.sum-box .v{font-size:22px;font-weight:800;}
+.sum-box .l{font-size:12px;color:var(--sub);margin-top:4px;}
+.progress{height:12px;border-radius:999px;background:var(--chip);overflow:hidden;margin-top:8px;}
+.progress > i{display:block;height:100%;background:var(--btn-grad);}
+.txn{display:flex;align-items:center;gap:10px;background:var(--card-bg);border:1px solid var(--card-brd);border-radius:12px;padding:10px 12px;margin-bottom:8px;}
+.txn .amt{font-weight:700;flex:0 0 auto;}
+.txn .amt.in{color:var(--ok);}
+.txn .amt.out{color:var(--danger);}
+.txn .info{flex:1;min-width:0;}
+.txn .info .c{font-size:13px;color:var(--sub);}
+.txn .del{background:none;color:var(--danger);}
+
+/* ===================== 资讯 ===================== */
+.news-item{background:var(--card-bg);border:1px solid var(--card-brd);border-radius:14px;padding:14px;margin-bottom:10px;}
+.news-item .nt{font-weight:700;font-size:15px;display:flex;justify-content:space-between;gap:8px;}
+.news-item .nd{font-size:12px;color:var(--sub);}
+.podcast{background:var(--card-bg);border:1px solid var(--card-brd);border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:6px;}
+.podcast .pf{font-size:30px;}
+
+/* ===================== 弹窗 / Toast ===================== */
+.modal{position:fixed;inset:0;background:rgba(30,42,44,0.45);backdrop-filter:blur(4px);display:none;align-items:center;justify-content:center;z-index:100;padding:20px;}
+.modal.show{display:flex;}
+.modal-card{background:var(--card-bg);border:1px solid var(--card-brd);border-radius:20px;padding:22px;max-width:520px;width:100%;max-height:85vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,0.3);}
+.modal-card h2{margin-top:0;}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--nav-active);color:#fff;padding:12px 22px;border-radius:999px;font-size:14px;box-shadow:0 10px 30px var(--glow);opacity:0;pointer-events:none;transition:all .3s;z-index:200;}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+.empty{color:var(--sub);font-size:13px;text-align:center;padding:20px;}
+.help-tip{font-size:12px;color:var(--sub);margin-top:8px;}
+
+@media (max-width:560px){
+  .content{padding:0 14px 40px;}
+  .topbar h1{font-size:22px;}
+  .sidebar{width:64px;flex-basis:64px;}
+  .nav-item{font-size:9px;}
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <!-- 左侧固定导航 -->
+  <aside class="sidebar" id="sidebar">
+    <div class="nav-group">
+      <div class="nav-label">工作·学习</div>
+      <button class="nav-item active" data-page="home"><span class="ico">🏠</span>首页</button>
+      <button class="nav-item" data-page="todo"><span class="ico">✅</span>待办</button>
+      <button class="nav-item" data-page="english"><span class="ico">🔤</span>英语</button>
+      <button class="nav-item" data-page="reading"><span class="ico">📚</span>阅读</button>
+    </div>
+    <div class="nav-sep"></div>
+    <div class="nav-group">
+      <div class="nav-label">生活·记录</div>
+      <button class="nav-item" data-page="diary"><span class="ico">📝</span>日记</button>
+      <button class="nav-item" data-page="health"><span class="ico">💧</span>健康</button>
+      <button class="nav-item" data-page="money"><span class="ico">💰</span>记账</button>
+      <button class="nav-item" data-page="fund"><span class="ico">📈</span>基金</button>
+    </div>
+    <div class="nav-sep"></div>
+    <div class="nav-group">
+      <div class="nav-label">资讯·系统</div>
+      <button class="nav-item" data-page="news"><span class="ico">📰</span>资讯</button>
+      <button class="nav-item" data-page="settings"><span class="ico">⚙️</span>设置</button>
+    </div>
+  </aside>
+
+  <!-- 右侧内容 -->
+  <main class="content">
+    <header class="topbar">
+      <div>
+        <h1 id="pageTitle">首页</h1>
+        <div class="sub" id="pageSub">你的专属小天地</div>
+      </div>
+      <button class="theme-btn" id="themeBtn" title="切换深色/浅色">🌙</button>
+    </header>
+
+    <div class="pages" id="pages">
+
+      <!-- 首页 -->
+      <section class="page active" id="page-home">
+        <div class="card hero-home">
+          <div class="hero-row">
+            <div>
+              <div class="hero-title">嗨，今天也辛苦啦 🍊</div>
+              <div class="home-date" id="homeDate"></div>
+              <div class="home-clock" id="homeClock"></div>
+            </div>
+          </div>
+          <div class="daily-quote" id="dailyQuote"></div>
+        </div>
+        <div class="grid grid-2">
+          <div class="card">
+            <h2>🌟 今日打卡</h2>
+            <div class="checkin-row" id="checkinRow"></div>
+          </div>
+          <div class="card">
+            <h2>✅ 今日待办</h2>
+            <div id="homeTodos"></div>
+          </div>
+        </div>
+        <div class="card">
+          <h2>📊 今日一览</h2>
+          <div class="grid grid-2" id="overviewGrid"></div>
+        </div>
+      </section>
+
+      <!-- 待办 -->
+      <section class="page" id="page-todo">
+        <div class="card">
+          <h2>➕ 新增待办</h2>
+          <div class="row">
+            <input id="todoText" placeholder="要做什么？" style="flex:2;">
+            <input id="todoDate" type="date" style="flex:1;">
+            <input id="todoTime" type="time" style="flex:1;">
+            <button class="btn" id="addTodo">添加</button>
+          </div>
+          <div class="help-tip">不填日期 = 每天待办；填了日期 = 近期日程。</div>
+        </div>
+        <div class="grid grid-2">
+          <div class="card"><h2>✅ 每日待办</h2><div id="dailyTodo"></div></div>
+          <div class="card"><h2>📅 近期日程</h2><div id="upcomingTodo"></div></div>
+        </div>
+      </section>
+
+      <!-- 英语 -->
+      <section class="page" id="page-english">
+        <div class="card">
+          <h2>🔤 英语学习</h2>
+          <div class="en-date" id="enDate"></div>
+          <div class="en-tabs" id="enTabs">
+            <button class="en-tab active" data-tab="word">单词</button>
+            <button class="en-tab" data-tab="hard">长难句</button>
+          </div>
+          <div id="enContent"></div>
+        </div>
+      </section>
+
+      <!-- 阅读 -->
+      <section class="page" id="page-reading">
+        <div class="card">
+          <h2>📚 阅读成长</h2>
+          <div class="en-tabs" id="readTabs">
+            <button class="en-tab active" data-tab="book">今日一书</button>
+            <button class="en-tab" data-tab="politics">每日政事</button>
+          </div>
+          <div id="readContent"></div>
+        </div>
+      </section>
+
+      <!-- 日记 -->
+      <section class="page" id="page-diary">
+        <div class="card">
+          <h2>📝 写日记</h2>
+          <div class="row" style="margin-bottom:8px;">
+            <input id="diaryTitle" placeholder="标题" style="flex:2;">
+            <select id="diaryCat" style="flex:1;">
+              <option value="日常">日常</option>
+              <option value="心情">心情</option>
+            </select>
+          </div>
+          <textarea id="diaryBody" placeholder="今天发生了什么…"></textarea>
+          <div class="row" style="margin-top:10px;">
+            <button class="btn" id="saveDiary">保存日记</button>
+            <span class="help-tip" id="diaryLockTip"></span>
+          </div>
+        </div>
+        <div class="card">
+          <h2>📔 我的日记</h2>
+          <div id="diaryList"></div>
+        </div>
+      </section>
+
+      <!-- 健康 -->
+      <section class="page" id="page-health">
+        <div class="card">
+          <h2>💧 喝水 & 护颈 & 久坐</h2>
+          <div class="sub" style="margin-bottom:10px;color:var(--sub);font-size:13px;">护颈·睡眠·喝水·21天习惯·复盘</div>
+          <div class="grid grid-3">
+            <div>
+              <h3>今日喝水（目标 8 杯）</h3>
+              <div class="water-cups" id="waterCups"></div>
+              <div class="row" style="margin-top:10px;">
+                <button class="btn sm" id="addWater">+1 杯</button>
+                <button class="btn ghost sm" id="resetWater">重置</button>
+              </div>
+            </div>
+            <div>
+              <h3>护颈提醒</h3>
+              <div id="neckStatus" class="meta-row">未开启</div>
+              <button class="btn sm" id="neckBtn">开启每45分钟提醒</button>
+            </div>
+            <div>
+              <h3>久坐提醒</h3>
+              <div id="sitStatus" class="meta-row">未开启</div>
+              <button class="btn sm" id="sitBtn">开启每30分钟提醒</button>
+            </div>
+          </div>
+        </div>
+        <div class="grid grid-2">
+          <div class="card">
+            <h2>😴 睡眠记录</h2>
+            <div class="row">
+              <div style="flex:1;"><label class="fld">入睡</label><input type="time" id="sleepAt"></div>
+              <div style="flex:1;"><label class="fld">起床</label><input type="time" id="wakeAt"></div>
+              <button class="btn sm" id="saveSleep" style="align-self:flex-end;">记录</button>
+            </div>
+            <div id="sleepReview" style="margin-top:10px;"></div>
+          </div>
+          <div class="card">
+            <h2>🌱 21天习惯打卡</h2>
+            <div class="row" style="margin-bottom:8px;">
+              <input id="habitName" placeholder="自定义习惯，如 早睡" style="flex:2;">
+              <button class="btn sm" id="addHabit">添加</button>
+            </div>
+            <div id="habitList"></div>
+          </div>
+        </div>
+        <div class="card">
+          <h2>📝 本周复盘提纲</h2>
+          <textarea class="review-box" id="reviewTpl" readonly></textarea>
+          <button class="btn sm" id="copyReview" style="margin-top:8px;">一键复制模板</button>
+        </div>
+      </section>
+
+      <!-- 记账 -->
+      <section class="page" id="page-money">
+        <div class="card">
+          <h2>💰 记一笔</h2>
+          <div class="row">
+            <select id="txnType" style="flex:1;"><option value="out">支出</option><option value="in">收入</option></select>
+            <input id="txnAmount" type="number" placeholder="金额" style="flex:1;">
+            <input id="txnCat" placeholder="分类，如 餐饮" style="flex:1;">
+            <input id="txnNote" placeholder="备注" style="flex:2;">
+            <button class="btn" id="addTxn">记录</button>
+          </div>
+          <div class="help-tip">也可从手机支付导出 CSV 后导入：需含「收/支、金额、分类、备注、日期」等列，导入时按表头自动匹配。</div>
+          <div class="row" style="margin-top:10px;">
+            <input type="file" id="csvFile" accept=".csv" style="flex:2;">
+            <button class="btn ghost sm" id="importCsv">导入 CSV</button>
+          </div>
+        </div>
+        <div class="card">
+          <h2>📊 资产总览</h2>
+          <div class="money-summary" id="moneySummary"></div>
+          <div style="margin-top:12px;">
+            <label class="fld">存钱目标进度</label>
+            <div class="row">
+              <input id="goalTarget" type="number" placeholder="目标金额" style="flex:1;">
+              <input id="goalCurrent" type="number" placeholder="已存" style="flex:1;">
+              <button class="btn sm" id="saveGoal">更新</button>
+            </div>
+            <div class="progress" id="goalBar"><i style="width:0%"></i></div>
+          </div>
+        </div>
+        <div class="card">
+          <h2>🧾 流水</h2>
+          <div id="txnList"></div>
+        </div>
+      </section>
+
+      <!-- 基金 -->
+      <section class="page" id="page-fund">
+        <div class="card">
+          <h2>📈 我的基金</h2>
+          <div class="row">
+            <select id="fundName" style="flex:2;"><option value="">选择基金…</option></select>
+            <input id="fundCode" placeholder="代码" style="flex:1;">
+            <input id="fundShares" type="number" placeholder="持有份额" style="flex:1;">
+            <input id="fundCost" type="number" placeholder="成本价" style="flex:1;">
+            <input id="fundPrice" type="number" placeholder="当前净值" style="flex:1;">
+            <button class="btn" id="addFund">添加</button>
+          </div>
+          <div class="help-tip">市值 = 份额 × 当前净值；收益 = 市值 − 份额 × 成本价。基金名称从常用列表选择，净值请填你查到的最新值（本工具纯本地，未与支付宝实时同步）。</div>
+          <div id="fundList" style="margin-top:12px;"></div>
+        </div>
+      </section>
+
+      <!-- 资讯 -->
+      <section class="page" id="page-news">
+        <div class="card">
+          <h2>📰 资讯中心</h2>
+          <div class="en-tabs" id="newsTabs">
+            <button class="en-tab active" data-tab="news">新闻</button>
+            <button class="en-tab" data-tab="podcast">播客</button>
+          </div>
+          <div id="newsContent"></div>
+        </div>
+      </section>
+
+      <!-- 设置 -->
+      <section class="page" id="page-settings">
+        <div class="card">
+          <h2>⚙️ 设置</h2>
+          <div class="row" style="align-items:flex-end;">
+            <div style="flex:1;"><label class="fld">🔒 日记查看密码（留空=不加密）</label><input type="password" id="diaryPw" placeholder="设置或更改密码"></div>
+            <button class="btn sm" id="savePw">设置密码</button>
+            <button class="btn ghost sm" id="clearPw">清除密码</button>
+          </div>
+          <hr style="border:none;border-top:1px solid var(--line);margin:16px 0;">
+          <div class="row">
+            <button class="btn ghost sm" id="exportData">导出备份(JSON)</button>
+            <button class="btn ghost sm" id="importData">导入备份</button>
+            <input type="file" id="importFile" accept=".json" style="display:none;">
+            <button class="btn ghost sm danger" id="clearAll">清空全部数据</button>
+          </div>
+          <div class="help-tip">所有数据仅保存在本机浏览器（localStorage），不上传任何服务器。换设备或清缓存会丢失，建议定期导出备份。</div>
+        </div>
+        <div class="card">
+          <h2>📱 当 App 用（添加到主屏幕）</h2>
+          <div class="sub" style="color:var(--sub);margin-bottom:10px">想像手机 App 一样随时打开、还能离线使用？在文件所在文件夹里双击 <b>启动工作台.bat</b> 即可：</div>
+          <ol style="margin:0;padding-left:20px;line-height:1.9;font-size:14px;color:var(--text)">
+            <li>双击 <b>启动工作台.bat</b>，会弹出一个命令行窗口（别关），并自动打开浏览器里的工作台。</li>
+            <li>在浏览器右上角菜单里选「应用 / 安装应用」或「添加到主屏幕」，就能固定到桌面或开始菜单。</li>
+            <li>之后<b>断网也能打开</b>（已离线缓存），数据依旧只存在你这台设备。</li>
+          </ol>
+          <div class="help-tip">直接双击「我的个人工作台.html」也能用（最简单），只是不能离线、不像 App。两种方式数据互通，都在本机。</div>
+        </div>
+      </section>
+
+    </div>
+  </main>
+</div>
+
+<!-- 通用弹窗 -->
+<div class="modal" id="modal"><div class="modal-card" id="modalCard"></div></div>
+<div class="toast" id="toast"></div>
+
+<script>
+/* ===================== 工具函数 ===================== */
+const $ = s => document.querySelector(s);
+const $$ = s => [...document.querySelectorAll(s)];
+const KEY = 'wb_state_v1';
+const todayStr = d => { d = d || new Date(); const z = n => String(n).padStart(2,'0'); return d.getFullYear()+'-'+z(d.getMonth()+1)+'-'+z(d.getDate()); };
+const fmtMD = d => (d.getMonth()+1)+'月'+d.getDate()+'日';
+const DAY_IDX = Math.floor((Date.now() - Date.UTC(2026,0,1))/86400000);
+const uid = () => Date.now().toString(36)+Math.random().toString(36).slice(2,7);
+
+/* 每日一句 · 名人名言（给大学生的启示，按日期轮换） */
+const QUOTES = [
+  {t:'路漫漫其修远兮，吾将上下而求索。',a:'屈原'},
+  {t:'博学之，审问之，慎思之，明辨之，笃行之。',a:'《礼记·中庸》'},
+  {t:'吾生也有涯，而知也无涯。',a:'庄子'},
+  {t:'故不积跬步，无以至千里；不积小流，无以成江海。',a:'荀子'},
+  {t:'业精于勤，荒于嬉；行成于思，毁于随。',a:'韩愈'},
+  {t:'为中华之崛起而读书。',a:'周恩来'},
+  {t:'愿中国青年都摆脱冷气，只是向上走。',a:'鲁迅'},
+  {t:'其实地上本没有路，走的人多了，也便成了路。',a:'鲁迅'},
+  {t:'不要因为走得太远，而忘记为什么出发。',a:'纪伯伦'},
+  {t:'种一棵树最好的时间是十年前，其次是现在。',a:'《穷爸爸富爸爸》'},
+  {t:'凡是过往，皆为序章。',a:'莎士比亚'},
+  {t:'你只管努力，剩下的交给时间。',a:'网络流行语'},
+  {t:'The only way to do great work is to love what you do.',a:'Steve Jobs'},
+  {t:'Stay hungry, stay foolish.',a:'Steve Jobs'},
+  {t:'Education is the most powerful weapon which you can use to change the world.',a:'Nelson Mandela'},
+  {t:'It does not matter how slowly you go as long as you do not stop.',a:'Confucius'},
+  {t:'Where there is a will, there is a way.',a:'英语谚语'},
+  {t:'学问之道，在于知行合一。',a:'王阳明'}
+];
+
+/* 每日政事（离线精选，按日期轮换；联网可搜最新） */
+const POLITICS = [
+  {tag:'科技创新',title:'我国航天工程再迎新进展',summary:'近期多项航天任务稳步推进，空间站应用与发展阶段成果持续涌现。',detail:'从载人航天到深空探测，我国航天事业保持稳健节奏。相关科普与产业带动，正让更多年轻人关注基础科学与工程创新，也为“科技自立自强”写下生动注脚。'},
+  {tag:'绿色发展',title:'碳达峰碳中和稳步推进',summary:'绿色低碳转型持续深入，新能源装机规模稳步扩大。',detail:'“双碳”目标下，风电、光伏等清洁能源快速发展，产业结构向低碳方向优化。日常生活里的节电、绿色出行，也是参与这场变革的小小方式。'},
+  {tag:'乡村振兴',title:'数字乡村建设提速',summary:'数字技术下沉田间地头，助农增收与基层治理同步提升。',detail:'电商直播、智慧农业、远程医疗等应用，正缩小城乡数字鸿沟。乡村振兴不只是修路盖房，更在于让人才与机会回流乡村。'},
+  {tag:'教育',title:'职业教育高质量发展',summary:'产教融合持续推进，技能人才成长通道进一步拓宽。',detail:'职业教育法明确“同等重要”，更多“工匠”有了清晰上升路径。对于正在读书的你，多元成才的路其实比以前更宽了。'},
+  {tag:'民生',title:'基本医保覆盖面持续巩固',summary:'多层次医疗保障体系不断完善，群众的就医负担稳步减轻。',detail:'跨省异地就医直接结算、药品集采降价等举措，让“看病贵”逐步缓解。了解基本医保政策，也是打理自己生活的一部分。'},
+  {tag:'经济',title:'新质生产力成为增长新动能',summary:'以科技创新驱动的新动能，正为经济高质量发展注入活力。',detail:'人工智能、生物制造、商业航天等新兴领域加快发展。理解“新质生产力”，有助于把握未来就业与创业的方向。'},
+  {tag:'交通',title:'高铁网络持续加密',summary:'更多城市纳入“高铁圈”，区域互联互通水平提升。',detail:'随着线路延伸，两三小时直达成为常态，探亲、求学、出游都更方便了。交通的便利，也在悄悄改变着人们的生活半径。'},
+  {tag:'文化',title:'博物馆热持续升温',summary:'逛博物馆成为新时尚，文博文创频频“出圈”。',detail:'从“为一座馆赴一座城”到线上云展览，传统文化正以更轻盈的方式走进日常。不妨这周末也去附近博物馆走走。'},
+  {tag:'国际',title:'共建“一带一路”合作深化',summary:'多边经贸与互联互通合作持续推进，惠及更多国家与地区。',detail:'从港口到铁路，从能源到数字经济，务实合作不断落地。关注国际时事，能帮我们跳出身边，看见更大的世界。'},
+  {tag:'科技',title:'人工智能加速赋能千行百业',summary:'AI 在制造、医疗、教育等领域加速落地，改变生产与学习方式。',detail:'生成式 AI 走入寻常应用，既带来效率红利，也提出新的学习要求。与其焦虑，不如学着用好它——它终将是你的工具，而非对手。'}
+];
+
+let S = load();
+function load(){ try{ return JSON.parse(localStorage.getItem(KEY)) || {}; }catch(e){ return {}; } }
+function save(){ localStorage.setItem(KEY, JSON.stringify(S)); }
+function ensure(){
+  S.checkins = S.checkins || {};
+  S.todos = S.todos || [];
+  S.diary = S.diary || [];
+  S.diaryPassword = S.diaryPassword || '';
+  S.unlocked = false;
+  S.health = S.health || { water:{}, sleep:[], habits:[] };
+  S.health.water = S.health.water || {};
+  S.health.sleep = S.health.sleep || [];
+  S.health.habits = S.health.habits || [];
+  S.money = S.money || { txns:[], goal:{target:0,current:0} };
+  S.money.txns = S.money.txns || [];
+  S.money.goal = S.money.goal || {target:0,current:0};
+  S.funds = S.funds || [];
+  S.theme = S.theme || 'light';
+}
+ensure();
+
+function toast(msg){ const t=$('#toast'); t.textContent=msg; t.classList.add('show'); clearTimeout(t._t); t._t=setTimeout(()=>t.classList.remove('show'),1800); }
+
+function speak(text){ try{ const u=new SpeechSynthesisUtterance(text); u.lang='en-US'; u.rate=0.9; speechSynthesis.cancel(); speechSynthesis.speak(u); }catch(e){} }
+
+/* 简单加密（异或 + base64），纯本地 */
+function xorCipher(str,key){ let o=''; for(let i=0;i<str.length;i++) o+=String.fromCharCode(str.charCodeAt(i)^key.charCodeAt(i%key.length)); return o; }
+function encrypt(text,pw){ return btoa(unescape(encodeURIComponent(xorCipher(text,pw)))); }
+function decrypt(b64,pw){ try{ return xorCipher(decodeURIComponent(escape(atob(b64))),pw); }catch(e){ return null; } }
+
+/* ===================== 导航 & 主题 ===================== */
+const PAGES = {
+  home:{t:'首页',s:'你的专属小天地'},
+  todo:{t:'待办日程',s:'把事情一件件做完'},
+  english:{t:'英语学习',s:'每天进步一点点'},
+  reading:{t:'阅读成长',s:'读书，遇见更好的自己'},
+  diary:{t:'日记',s:'记录生活与心情'},
+  health:{t:'健康养生',s:'护颈·睡眠·喝水·21天习惯·复盘'},
+  money:{t:'记账本',s:'每一笔都清清楚楚'},
+  fund:{t:'我的基金',s:'看着小钱钱慢慢长大'},
+  news:{t:'资讯中心',s:'新闻 & 播客推荐'},
+  settings:{t:'设置',s:'个性化你的工作台'}
+};
+
+function showPage(id){
+  $$('.nav-item').forEach(b=>b.classList.toggle('active', b.dataset.page===id));
+  $$('.page').forEach(p=>p.classList.toggle('active', p.id==='page-'+id));
+  $('#pageTitle').textContent = PAGES[id].t;
+  $('#pageSub').textContent = PAGES[id].s;
+  const map = {home:renderHome,todo:renderTodo,english:renderEnglish,reading:renderReading,diary:renderDiary,health:renderHealth,money:renderMoney,fund:renderFund,news:renderNews,settings:renderSettings};
+  (map[id]||(()=>{}))();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+$$('.nav-item').forEach(b=> b.addEventListener('click',()=>showPage(b.dataset.page)));
+
+function applyTheme(){ document.documentElement.setAttribute('data-theme', S.theme); $('#themeBtn').textContent = S.theme==='dark'?'☀️':'🌙'; }
+$('#themeBtn').addEventListener('click',()=>{ S.theme = S.theme==='dark'?'light':'dark'; save(); applyTheme(); });
+applyTheme();
+
+/* ===================== 首页 ===================== */
+let homeClockTimer = null;
+function renderHome(){
+  // 日期 + 实时时钟
+  const now = new Date();
+  const wd = ['日','一','二','三','四','五','六'][now.getDay()];
+  $('#homeDate').textContent = `${now.getFullYear()}年${now.getMonth()+1}月${now.getDate()}日 · 星期${wd}`;
+  const z = n => String(n).padStart(2,'0');
+  const tick = ()=>{ const n=new Date(); $('#homeClock').textContent = `${z(n.getHours())}:${z(n.getMinutes())}:${z(n.getSeconds())}`; };
+  clearInterval(homeClockTimer); tick(); homeClockTimer = setInterval(tick,1000);
+  // 每日一句 · 名人名言
+  const q = QUOTES[DAY_IDX % QUOTES.length];
+  $('#dailyQuote').innerHTML = `<span class="qmark">“</span>${q.t}<span class="qmark">”</span><div class="qhint">—— ${q.a} · 每日一句</div>`;
+  // 打卡
+  const t = todayStr();
+  const ck = S.checkins[t] || {wake:false,sleep:false,read:false,neck:false};
+  S.checkins[t] = ck;
+  const defs = [['wake','🌅','早起 07:00'],['sleep','🌙','早睡 23:00'],['read','📖','读书'],['neck','💆','护颈']];
+  $('#checkinRow').innerHTML = defs.map(([k,e,n])=>`<div class="checkin ${ck[k]?'done':''}" data-k="${k}"><span class="emo">${e}</span><span class="nm">${n}</span></div>`).join('');
+  $$('#checkinRow .checkin').forEach(el=>el.addEventListener('click',()=>{
+    const k=el.dataset.k; ck[k]=!ck[k]; S.checkins[t]=ck; save(); renderHome();
+  }));
+  // 总览
+  const stats = [
+    ['✅', S.todos.filter(x=>!x.done).length, '未完成待办'],
+    ['📔', S.diary.length, '日记篇数'],
+    ['💰', S.money.txns.length, '记账笔数'],
+    ['📈', S.funds.length, '基金持仓']
+  ];
+  $('#overviewGrid').innerHTML = stats.map(([e,n,l])=>`<div class="stat"><span class="ico">${e}</span><div><div class="num">${n}</div><div class="lb">${l}</div></div></div>`).join('');
+  // 今日待办详情
+  const t2 = todayStr();
+  const daily = S.todos.filter(x=>!x.date);
+  const due = S.todos.filter(x=>x.date===t2);
+  const items = [...daily.map(x=>({...x,_l:'每天'})), ...due.map(x=>({...x,_l:x.date}))];
+  $('#homeTodos').innerHTML = items.length? items.map(x=>`<div class="todo-item ${x.done?'done':''}" data-id="${x.id}">
+      <div class="ck">${x.done?'✓':''}</div>
+      <div class="tx">${escapeHTML(x.text)}</div>
+      ${x.time?`<div class="dt">${x.time}</div>`:''}
+      <div class="dt tag-pill">${x._l}</div>
+      <button class="del" data-del="${x.id}">🗑</button></div>`).join('')
+    : '<div class="empty">今天还没有待办，去「待办」加一个吧～</div>';
+  $$('#homeTodos .todo-item').forEach(el=>{
+    el.querySelector('.ck').addEventListener('click',()=>{ const x=S.todos.find(y=>y.id===el.dataset.id); if(x){ x.done=!x.done; save(); renderHome(); renderTodo(); } });
+    el.querySelector('.del').addEventListener('click',()=>{ S.todos=S.todos.filter(y=>y.id!==el.dataset.id); save(); renderHome(); renderTodo(); });
+  });
+}
+
+/* (全局搜索已从首页移除) */
+
+/* ===================== 待办 ===================== */
+function renderTodo(){
+  const t = todayStr();
+  const daily = S.todos.filter(x=>!x.date);
+  const up = S.todos.filter(x=>x.date).sort((a,b)=>a.date.localeCompare(b.date));
+  const itemHTML = (x)=>`<div class="todo-item ${x.done?'done':''}" data-id="${x.id}">
+    <div class="ck">${x.done?'✓':''}</div>
+    <div class="tx">${x.text}</div>
+    ${x.time?`<div class="dt">${x.time}</div>`:''}
+    <button class="del" data-del="${x.id}">🗑</button></div>`;
+  $('#dailyTodo').innerHTML = daily.length? daily.map(itemHTML).join('') : '<div class="empty">今天还没有待办，加一个吧～</div>';
+  $('#upcomingTodo').innerHTML = up.length? up.map(x=>itemHTML({...x,text:x.text+(x.date?(' · '+x.date):'')})).join('') : '<div class="empty">暂无近期日程</div>';
+  $$('#dailyTodo .todo-item, #upcomingTodo .todo-item').forEach(el=>{
+    el.querySelector('.ck').addEventListener('click',()=>{ const x=S.todos.find(y=>y.id===el.dataset.id); x.done=!x.done; save(); renderTodo(); });
+    el.querySelector('.del').addEventListener('click',()=>{ S.todos=S.todos.filter(y=>y.id!==el.dataset.id); save(); renderTodo(); renderHome(); });
+  });
+}
+$('#addTodo').addEventListener('click',()=>{
+  const text=$('#todoText').value.trim(); if(!text){ toast('先写点什么'); return; }
+  const date=$('#todoDate').value||''; const time=$('#todoTime').value||'';
+  S.todos.push({id:uid(),text,date,time,done:false}); save();
+  $('#todoText').value=''; $('#todoDate').value=''; $('#todoTime').value='';
+  renderTodo(); renderHome(); toast('已添加');
+});
+
+/* ===================== 英语 ===================== */
+const WORDS = {
+  '六级':[
+    {w:'abundant',p:'/əˈbʌndənt/',m:'丰富的'},
+    {w:'accomplish',p:'/əˈkʌmplɪʃ/',m:'完成'},
+    {w:'accurate',p:'/ˈækjərət/',m:'准确的'},
+    {w:'acknowledge',p:'/əkˈnɒlɪdʒ/',m:'承认；致谢'},
+    {w:'adequate',p:'/ˈædɪkwət/',m:'足够的'},
+    {w:'advocate',p:'/ˈædvəkeɪt/',m:'提倡；拥护'},
+    {w:'ambiguous',p:'/æmˈbɪɡjuəs/',m:'含糊的'},
+    {w:'anticipate',p:'/ænˈtɪsɪpeɪt/',m:'预期；期待'},
+    {w:'apparent',p:'/əˈpærənt/',m:'明显的'},
+    {w:'appropriate',p:'/əˈprəʊpriət/',m:'合适的'},
+    {w:'approximate',p:'/əˈprɒksɪmət/',m:'近似的'},
+    {w:'assemble',p:'/əˈsembl/',m:'集合；装配'},
+    {w:'assume',p:'/əˈsjuːm/',m:'假定；承担'},
+    {w:'authority',p:'/ɔːˈθɒrəti/',m:'权威；当局'},
+    {w:'available',p:'/əˈveɪləbl/',m:'可获得的'},
+    {w:'boundary',p:'/ˈbaʊndri/',m:'边界'},
+    {w:'capable',p:'/ˈkeɪpəbl/',m:'有能力的'},
+    {w:'circumstance',p:'/ˈsɜːkəmstəns/',m:'环境；情况'},
+    {w:'compensate',p:'/ˈkɒmpenseɪt/',m:'补偿'},
+    {w:'complicated',p:'/ˈkɒmplɪkeɪtɪd/',m:'复杂的'},
+    {w:'comprehensive',p:'/ˌkɒmprɪˈhensɪv/',m:'全面的'},
+    {w:'concentrate',p:'/ˈkɒnsntreɪt/',m:'集中；专注'},
+    {w:'consequence',p:'/ˈkɒnsɪkwəns/',m:'后果'},
+    {w:'considerable',p:'/kənˈsɪdərəbl/',m:'相当大的'}
+  ],
+  '考研':[
+    {w:'abandon',p:'/əˈbændən/',m:'抛弃'},
+    {w:'abnormal',p:'/æbˈnɔːml/',m:'反常的'},
+    {w:'abolish',p:'/əˈbɒlɪʃ/',m:'废除'},
+    {w:'absence',p:'/ˈæbsəns/',m:'缺席；缺乏'},
+    {w:'absolute',p:'/ˈæbsəluːt/',m:'绝对的'},
+    {w:'abstract',p:'/ˈæbstrækt/',m:'抽象的'},
+    {w:'accelerate',p:'/əkˈseləreɪt/',m:'加速'},
+    {w:'accommodate',p:'/əˈkɒmədeɪt/',m:'容纳；适应'},
+    {w:'acquire',p:'/əˈkwaɪə/',m:'获得'},
+    {w:'adapt',p:'/əˈdæpt/',m:'适应'},
+    {w:'adjacent',p:'/əˈdʒeɪsnt/',m:'邻近的'},
+    {w:'adjust',p:'/əˈdʒʌst/',m:'调整'},
+    {w:'admission',p:'/ədˈmɪʃn/',m:'准许进入；承认'},
+    {w:'adopt',p:'/əˈdɒpt/',m:'采纳；收养'},
+    {w:'aesthetic',p:'/iːsˈθetɪk/',m:'审美的'},
+    {w:'affect',p:'/əˈfekt/',m:'影响'},
+    {w:'affiliate',p:'/əˈfɪlieɪt/',m:'附属'},
+    {w:'agenda',p:'/əˈdʒendə/',m:'议程'},
+    {w:'alleviate',p:'/əˈliːvieɪt/',m:'减轻'},
+    {w:'allocate',p:'/ˈæləkeɪt/',m:'分配'},
+    {w:'alter',p:'/ˈɔːltə/',m:'改变'},
+    {w:'alternative',p:'/ɔːlˈtɜːnətɪv/',m:'替代的'},
+    {w:'ambitious',p:'/æmˈbɪʃəs/',m:'有野心的'},
+    {w:'analogous',p:'/əˈnæləɡəs/',m:'类似的'}
+  ]
+};
+const HARD_SENTENCES = [
+  {en:'It is not the tools we use but the way we use them that determines the outcome.', zh:'决定结果的不是我们使用的工具，而是我们使用工具的方式。', parse:'本句是强调句 "It is ... that ..."，强调主语 "not A but B"（不是 A 而是 B）。"we use" 是省略 that/which 的定语从句，分别修饰 tools 与 way。', words:'determine 决定；outcome 结果'},
+  {en:'Only by practicing consistently can we make steady progress in English.', zh:'只有坚持练习，我们才能在英语上取得稳定的进步。', parse:'"Only + 状语" 位于句首引发部分倒装：助动词 can 提到主语 we 之前。正常语序为 we can make ...。', words:'consistently 持续地；steady 稳定的；progress 进步'},
+  {en:'The book, which was published last year, has already become a bestseller.', zh:'这本书去年出版，如今已成为畅销书。', parse:'主句为主谓结构；"which was published last year" 是非限制性定语从句，用逗号隔开补充说明 the book，删去后句子仍完整。', words:'publish 出版；bestseller 畅销书'},
+  {en:'Had I known the truth earlier, I would have acted differently.', zh:'如果我早点知道真相，我会采取不同的做法。', parse:'虚拟语气倒装：If I had known 省略 if 变为 Had I known。表示与过去事实相反，主句用 would have + 过去分词。', words:'truth 真相；act 行动；differently 不同地'},
+  {en:'What he said at the meeting surprised everyone who was present.', zh:'他在会上说的话让在场所有人都感到惊讶。', parse:'"What he said" 是主语从句（what 既引导从句又作 said 的宾语）；"who was present" 是定语从句修饰 everyone。', words:'surprise 使惊讶；present 在场的'},
+  {en:'Despite the heavy rain, the marathon was held as scheduled.', zh:'尽管大雨倾盆，马拉松仍按计划举行。', parse:'"Despite + 名词" 作让步状语（despite 是介词，后接名词而非句子）；主句为被动语态 was held。', words:'despite 尽管；marathon 马拉松；schedule 日程'},
+  {en:'The more you read, the more you will understand about the world.', zh:'你读得越多，就越能理解这个世界。', parse:'"the + 比较级 ..., the + 比较级 ..." 句型，表示"越……越……"，前后均为比较级结构。', words:'understand 理解；world 世界'},
+  {en:'She made it clear that she would not tolerate such behavior.', zh:'她明确表示她不会容忍这种行为。', parse:'"make + it + 形容词 + that 从句" 中 it 是形式宾语，真正的宾语是后面的 that 从句。', words:'tolerate 容忍；behavior 行为'},
+  {en:'Knowing that time was limited, they worked even harder.', zh:'知道时间有限，他们工作得更加努力。', parse:'"Knowing that ..." 是现在分词短语作原因状语，相当于 Because they knew that ...。', words:'limited 有限的；hard 努力地'},
+  {en:'Not until the train pulled out did he realize he had left his luggage behind.', zh:'直到火车开走，他才意识到自己把行李落下了。', parse:'"Not until" 位于句首引发主句部分倒装：did he realize。until 引导的时间状语从句用正常语序。', words:'pull out 驶出；realize 意识到；luggage 行李'}
+];
+let enTab='word';
+function renderEnglish(){
+  const d=new Date();
+  $('#enDate').textContent = '今日（'+fmtMD(d)+'）· 每天自动轮换，保持新鲜感';
+  $$('#enTabs .en-tab').forEach(b=>b.classList.toggle('active',b.dataset.tab===enTab));
+  const c = $('#enContent');
+  if(enTab==='word'){
+    const level = S.enLevel || '六级';
+    const pool = WORDS[level];
+    const start = (DAY_IDX*8)%pool.length;
+    const picks=[]; for(let i=0;i<8;i++) picks.push(pool[(start+i)%pool.length]);
+    const sel = `<div class="row" style="margin-bottom:12px;"><span class="sub" style="color:var(--sub)">分级词库：</span>`+
+      Object.keys(WORDS).map(l=>`<button class="en-tab ${l===level?'active':''}" data-lv="${l}">${l}</button>`).join('')+`</div>`;
+    c.innerHTML = sel + '<div class="grid grid-2">'+picks.map(w=>`<div class="word-card"><div class="w">${w.w} <button class="spk" data-spk="${w.w}">🔊</button></div><div class="p">${w.p}</div><div class="m">${w.m}</div></div>`).join('')+'</div>';
+    $$('#enContent .en-tab[data-lv]').forEach(b=>b.addEventListener('click',()=>{ S.enLevel=b.dataset.lv; save(); renderEnglish(); }));
+    $$('#enContent .spk').forEach(b=>b.addEventListener('click',()=>speak(b.dataset.spk)));
+  } else if(enTab==='hard'){
+    const s = HARD_SENTENCES[DAY_IDX % HARD_SENTENCES.length];
+    c.innerHTML = `<div class="hard-sentence">
+      <div class="hs-en">${s.en} <button class="spk" data-spk="${s.en}">🔊</button></div>
+      <div class="hs-zh">${s.zh}</div>
+      <div class="hs-block"><div class="hs-label">🔍 结构解析</div><div class="hs-parse">${s.parse}</div></div>
+      <div class="hs-block"><div class="hs-label">📝 重点词</div><div class="hs-words">${s.words}</div></div>
+    </div>`;
+    c.querySelector('.spk').addEventListener('click',()=>speak(s.en));
+  }
+}
+$$('#enTabs .en-tab').forEach(b=>b.addEventListener('click',()=>{ enTab=b.dataset.tab; renderEnglish(); }));
+
+/* ===================== 阅读 ===================== */
+const BOOKS = [
+  {title:'被讨厌的勇气',author:'岸见一郎',quote:'自由就是被别人讨厌。',content:'以「哲人与青年」的对话形式，系统阐释阿德勒个体心理学：人的烦恼皆来自人际关系；要学会课题分离；在共同体中找到归属；认真活在「此时此刻」。',feeling:'这本书最打动我的是「课题分离」——我们常把别人的情绪当成自己的责任，结果活得小心翼翼。阿德勒说，你只需对自己的课题负责，别人的评价与情绪是他们的事。读完后我开始学着在人际里划清边界，不再为「被讨厌」而焦虑。它不是教你冷漠，而是把能量收回到自己能改变的事上。每天翻几页，像和一位温和的哲学家聊天，慢慢把「讨好型人格」松一松。'},
+  {title:'小王子',author:'圣埃克苏佩里',quote:'真正重要的东西，用眼睛是看不见的。',content:'一位坠机被困沙漠的飞行员，遇见来自 B612 星球的小王子。小王子游历数颗星球，遇见国王、虚荣者、商人等大人，最终明白「驯养」与「责任」的意义。',feeling:'小时候读只觉得是童话，长大再读满眼是成年人世界的可笑与孤单。那句「真正重要的东西，用眼睛是看不见的」，每次重读都心软一下。我们忙着计算、占有、证明自己，却忘了给玫瑰浇水、对狐狸负责。这本书提醒我：关系之所以珍贵，是因为你为它花过时间。它也让我学会用孩子的眼睛看大人的世界——荒诞，却也值得温柔以待。'},
+  {title:'活着',author:'余华',quote:'人是为活着本身而活着的。',content:'富少福贵败光家产，此后几十年历经战乱、饥荒与接连的丧亲，至亲一个个离他而去，最后只剩一头老牛相伴，平静地活着。',feeling:'余华用最克制的笔写最沉的痛。福贵的一生几乎被苦难填满，可他讲述时却没有控诉，只有平静。这让我重新理解「活着」——不是为成就、为意义，仅仅是「活着本身」就值得。我们常把幸福绑架在结果上，读完却想：能不能就为今天这碗饭、这阵风而踏实？它不提供解药，却给了我一种把日子过下去的韧劲。'},
+  {title:'蛤蟆先生去看心理医生',author:'罗伯特·戴博德',quote:'你能让自己好起来。',content:'抑郁的蛤蟆先生在心理咨询师苍鹭引导下，回溯童年、认识「儿童 / 父母 / 成人」三种自我状态，逐渐为自己负责，走出情绪泥沼。',feeling:'这是一本把心理咨询「演」出来的书，读着像在旁听自己的治疗。最有用的是「人生坐标」和三种自我状态：很多情绪失控，其实是退回了童年的「适应型儿童」。我开始留意自己什么时候在讨好、什么时候在指责，然后试着回到「成人状态」做选择。它不玄，给出的工具很朴素，却真的能帮你在情绪海里踩到一块石头。推荐给同样容易内耗的人。'},
+  {title:'心流',author:'米哈里·契克森米哈赖',quote:'专注本身，就是回报。',content:'探讨「心流」——当挑战与技能匹配、目标清晰、反馈即时时，人会全神贯注、忘记时间，获得最深层的幸福与秩序感。',feeling:'这本书解开了我一个长期困惑：为什么打游戏、画画时那么爽，干活却那么累？答案在「心流」。幸福不是躺平，而是专注做事本身带来的秩序感。作者给了可操作的方法：把大目标拆成有反馈的小步骤、匹配难度。我试着给每天的任务设「心流时段」，效率与满足感都上来了。它让我明白，快乐不必外求，把注意力安放好，此刻就能丰盈。'},
+  {title:'非暴力沟通',author:'马歇尔·卢森堡',quote:'观察，而不评判。',content:'提出「观察—感受—需要—请求」四步沟通法，教人剥离评判与指责，诚实表达自己、同理倾听他人，从而化解冲突。',feeling:'很多关系的崩坏，源于我们把「评价」当成了「事实」。这本书的四步法像一套沟通的操作系统：先说看见的（不评判），再说感受，再讲需要，最后提请求。我用在和家人的对话里，争吵明显少了——不是忍，而是把话说明白。它最难也最值的地方，是逼你直面自己的「需要」。读完会觉得：原来好好说话，是一种可以练习的能力。'},
+  {title:'你当像鸟飞往你的山',author:'塔拉·韦斯特弗',quote:'你可以用很多说法来称呼这个自我：转变，蜕变，虚伪，自由。',content:'作者生于与世隔绝的摩门教家庭，17 岁前未上学，靠自学考入大学，最终获剑桥博士，讲述教育与自我重塑的历程。',feeling:'这本书让我震撼于「教育」的重量——它不只是学历，而是你有没有能力重新认识自己、挣脱原生家庭的叙事。塔拉在求知与亲情间撕裂，那种痛我很共情：成长有时意味着背叛旧的归属。但它也证明，人真的可以借由学习，把自己重新养一遍。读它的时候，我默默感激自己还能读书、还能选择。如果你也在自我怀疑，这本书会给你一点孤勇。'}
+];
+let readTab='book';
+function renderReading(){
+  $$('#readTabs .en-tab').forEach(b=>b.classList.toggle('active',b.dataset.tab===readTab));
+  const c=$('#readContent');
+  if(readTab==='book'){
+    const bk = BOOKS[DAY_IDX % BOOKS.length];
+    c.innerHTML = `<div class="book-hero"><div class="cover">📖</div><div style="flex:1;min-width:0">
+      <div style="font-size:18px;font-weight:800">${bk.title}</div>
+      <div class="sub" style="color:var(--sub)">${bk.author}</div>
+      <div style="margin:8px 0;font-style:italic">“${bk.quote}”</div>
+      <div class="sub" style="color:var(--sub);font-size:13px;line-height:1.7;margin-top:6px"><b>📌 主要内容：</b>${bk.content}</div>
+      <div class="sub" style="color:var(--sub);font-size:13px;line-height:1.7;margin-top:6px"><b>💭 读后感悟：</b>${bk.feeling}</div>
+    </div></div>`;
+  } else {
+    const p = POLITICS[DAY_IDX % POLITICS.length];
+    c.innerHTML = `<div class="politics-card">
+      <div class="ph"><span class="ptag">${p.tag}</span><span class="pdate">${todayStr()}</span></div>
+      <div class="ptitle">${p.title}</div>
+      <div class="pbody">${p.summary}</div>
+      <div class="pdetail">${p.detail}</div>
+      <a class="btn sm ghost" href="https://www.baidu.com/s?wd=${encodeURIComponent(p.title)}" target="_blank" rel="noopener">🔗 联网了解详情</a>
+      <div class="pnote">本栏为离线精选，按日期自动轮换；点击上方可联网搜索最新资讯。</div>
+    </div>`;
+  }
+}
+$$('#readTabs .en-tab').forEach(b=>b.addEventListener('click',()=>{ readTab=b.dataset.tab; renderReading(); }));
+/* ===================== 日记 ===================== */
+function renderDiary(){
+  $('#diaryLockTip').textContent = S.diaryPassword? (S.unlocked?'已解锁，可正常查看':'已设密码，未解锁时正文遮挡'):'未设密码';
+  // 列表
+  const list = [...S.diary].reverse();
+  $('#diaryList').innerHTML = list.length? list.map(d=>{
+    const locked = S.diaryPassword && !S.unlocked;
+    const body = locked? '🔒 已加密，点击解锁查看' : (S.diaryPassword? decrypt(d.body,d._pw||''): d.body);
+    return `<div class="diary-item">
+      <div class="dh"><b>${escapeHTML(d.title)}</b><span class="cat">${d.category}</span></div>
+      <div class="sub" style="color:var(--sub);font-size:12px">${d.date}</div>
+      <div class="${locked?'locked-body':''}" style="margin-top:6px;line-height:1.7;white-space:pre-wrap">${escapeHTML(body)}</div>
+      ${locked?'<button class="btn ghost sm" id="unlockBtn" style="margin-top:8px">🔓 解锁查看</button>':`<button class="btn ghost sm danger" data-del="${d.id}" style="margin-top:8px">删除</button>`}
+    </div>`;
+  }).join('') : '<div class="empty">还没有日记，写第一篇吧～</div>';
+  const ub=$('#unlockBtn'); if(ub) ub.addEventListener('click',()=>{
+    const pw=prompt('请输入日记密码：'); if(!pw) return;
+    if(pw===S.diaryPassword){ S.unlocked=true; S.diary.forEach(d=>d._pw=pw); save(); renderDiary(); toast('已解锁'); }
+    else toast('密码错误');
+  });
+  $$('#diaryList [data-del]').forEach(b=>b.addEventListener('click',()=>{ S.diary=S.diary.filter(y=>y.id!==b.dataset.del); save(); renderDiary(); renderHome(); }));
+}
+$('#saveDiary').addEventListener('click',()=>{
+  const title=$('#diaryTitle').value.trim()||'无标题';
+  const body=$('#diaryBody').value;
+  if(!body.trim()){ toast('写点内容吧'); return; }
+  let store=body;
+  if(S.diaryPassword){ store=encrypt(body,S.diaryPassword); }
+  S.diary.push({id:uid(),title,category:$('#diaryCat').value,body:store,date:todayStr()});
+  save(); $('#diaryTitle').value=''; $('#diaryBody').value=''; renderDiary(); renderHome(); toast('日记已保存');
+});
+
+/* ===================== 健康 ===================== */
+function renderHealth(){
+  const t=todayStr();
+  const cups = S.health.water[t]||0;
+  $('#waterCups').innerHTML = Array.from({length:8},(_,i)=>`<div class="cup ${i<cups?'full':''}"></div>`).join('');
+  renderHabits();
+  renderSleep();
+  $('#reviewTpl').value = `【本周复盘】
+一、做了啥：
+-
+二、小成就：
+-
+三、踩坑 / 不足：
+-
+四、下周三件事：
+1.
+2.
+3.
+五、健康反思（护颈/睡眠/喝水/运动）：
+-`;
+}
+$('#addWater').addEventListener('click',()=>{ const t=todayStr(); S.health.water[t]=Math.min(8,(S.health.water[t]||0)+1); save(); renderHealth(); });
+$('#resetWater').addEventListener('click',()=>{ S.health.water[todayStr()]=0; save(); renderHealth(); });
+let neckTimer=null, sitTimer=null;
+$('#neckBtn').addEventListener('click',()=>{
+  if(neckTimer){ clearInterval(neckTimer); neckTimer=null; $('#neckStatus').textContent='未开启'; toast('已关闭护颈提醒'); }
+  else { neckTimer=setInterval(()=>toast('💆 该护颈啦，转转脖子～'),45*60*1000); $('#neckStatus').textContent='已开启（每45分钟）'; toast('护颈提醒已开启'); }
+});
+$('#sitBtn').addEventListener('click',()=>{
+  if(sitTimer){ clearInterval(sitTimer); sitTimer=null; $('#sitStatus').textContent='未开启'; toast('已关闭久坐提醒'); }
+  else { sitTimer=setInterval(()=>toast('🚶 起来走动走动，别久坐～'),30*60*1000); $('#sitStatus').textContent='已开启（每30分钟）'; toast('久坐提醒已开启'); }
+});
+function renderSleep(){
+  const week=[]; const base=new Date(); base.setDate(base.getDate()-6);
+  for(let i=0;i<7;i++){ const d=new Date(base); d.setDate(base.getDate()+i); const ds=todayStr(d); const rec=S.health.sleep.find(s=>s.date===ds); if(rec) week.push(rec); }
+  let html='';
+  if(week.length){
+    const durs=week.map(w=>w.dur);
+    const avg=(durs.reduce((a,b)=>a+b,0)/durs.length).toFixed(1);
+    html+=`<div class="meta-row">本周平均睡眠 <b style="color:var(--accent)">${avg}</b> 小时，共 ${week.length} 天记录</div>`;
+    html+=week.map(w=>`<div class="meta-row">${w.date}：睡 ${w.dur}h（${w.sleep}→${w.wake}）</div>`).join('');
+  } else html='<div class="empty">记录入睡/起床，生成睡眠复盘</div>';
+  $('#sleepReview').innerHTML=html;
+}
+$('#saveSleep').addEventListener('click',()=>{
+  const sl=$('#sleepAt').value, wk=$('#wakeAt').value; if(!sl||!wk){ toast('填完整'); return; }
+  const toMin=t=>{ const[a,b]=t.split(':').map(Number); return a*60+b; };
+  let dur=(toMin(wk)-toMin(sl)+1440)%1440/60;
+  const t=todayStr();
+  const ex=S.health.sleep.findIndex(s=>s.date===t);
+  const rec={date:t,sleep:sl,wake:wk,dur:dur.toFixed(1)};
+  if(ex>=0) S.health.sleep[ex]=rec; else S.health.sleep.push(rec);
+  save(); renderSleep(); toast('已记录，睡了 '+rec.dur+'h');
+});
+function renderHabits(){
+  $('#habitList').innerHTML = S.health.habits.length? S.health.habits.map(h=>{
+    const done = h.history[todayStr()];
+    return `<div class="habit-item"><div style="flex:1;min-width:0"><b>${h.name}</b> <span class="streak">连续 ${h.streak} 天</span></div>
+      <button class="btn sm ${done?'':'ghost'}" data-check="${h.id}">${done?'今日✓':'打卡'}</button>
+      <button class="del" data-del="${h.id}" style="background:none;color:var(--danger)">🗑</button></div>`;
+  }).join('') : '<div class="empty">添加你的 21 天习惯吧</div>';
+  $$('#habitList [data-check]').forEach(b=>b.addEventListener('click',()=>{
+    const h=S.health.habits.find(x=>x.id===b.dataset.check); const t=todayStr();
+    if(h.history[t]){ delete h.history[t]; h.streak=Math.max(0,h.streak-1); }
+    else { h.history[t]=true; h.streak=(h.streak||0)+1; }
+    save(); renderHabits();
+  }));
+  $$('#habitList [data-del]').forEach(b=>b.addEventListener('click',()=>{ S.health.habits=S.health.habits.filter(x=>x.id!==b.dataset.del); save(); renderHabits(); }));
+}
+$('#addHabit').addEventListener('click',()=>{
+  const n=$('#habitName').value.trim(); if(!n){ toast('填习惯名'); return; }
+  S.health.habits.push({id:uid(),name:n,streak:0,history:{}}); save(); $('#habitName').value=''; renderHabits(); toast('已添加');
+});
+$('#copyReview').addEventListener('click',()=>{ navigator.clipboard.writeText($('#reviewTpl').value).then(()=>toast('已复制，去粘贴吧～'),()=>toast('复制失败，请手动选择')); });
+
+/* ===================== 记账 ===================== */
+function renderMoney(){
+  const txns=S.money.txns;
+  const income=txns.filter(t=>t.type==='in').reduce((a,b)=>a+b.amount,0);
+  const expense=txns.filter(t=>t.type==='out').reduce((a,b)=>a+b.amount,0);
+  $('#moneySummary').innerHTML = `
+    <div class="sum-box"><div class="v" style="color:var(--ok)">¥${income.toFixed(2)}</div><div class="l">总收入</div></div>
+    <div class="sum-box"><div class="v" style="color:var(--danger)">¥${expense.toFixed(2)}</div><div class="l">总支出</div></div>
+    <div class="sum-box"><div class="v">¥${(income-expense).toFixed(2)}</div><div class="l">结余</div></div>`;
+  const g=S.money.goal; $('#goalTarget').value=g.target||''; $('#goalCurrent').value=g.current||'';
+  const pct = g.target>0? Math.min(100, (g.current/g.target*100)) : 0;
+  $('#goalBar').firstElementChild.style.width=pct+'%';
+  const list=[...txns].reverse();
+  $('#txnList').innerHTML = list.length? list.map(t=>`<div class="txn"><span class="amt ${t.type==='in'?'in':'out'}">${t.type==='in'?'+':'-'}¥${t.amount.toFixed(2)}</span><div class="info"><div>${t.cat||'其他'}</div><div class="c">${t.note||''} · ${t.date}</div></div><button class="del" data-del="${t.id}">🗑</button></div>`).join('') : '<div class="empty">还没有记账</div>';
+  $$('#txnList [data-del]').forEach(b=>b.addEventListener('click',()=>{ S.money.txns=S.money.txns.filter(y=>y.id!==b.dataset.del); save(); renderMoney(); renderHome(); }));
+}
+$('#addTxn').addEventListener('click',()=>{
+  const amount=parseFloat($('#txnAmount').value); if(!(amount>0)){ toast('金额不对'); return; }
+  S.money.txns.push({id:uid(),type:$('#txnType').value,amount,cat:$('#txnCat').value.trim(),note:$('#txnNote').value.trim(),date:todayStr()});
+  save(); $('#txnAmount').value=''; $('#txnCat').value=''; $('#txnNote').value=''; renderMoney(); renderHome(); toast('已记账');
+});
+$('#saveGoal').addEventListener('click',()=>{ S.money.goal={target:parseFloat($('#goalTarget').value)||0,current:parseFloat($('#goalCurrent').value)||0}; save(); renderMoney(); toast('已更新'); });
+$('#importCsv').addEventListener('click',()=>{
+  const f=$('#csvFile').files[0]; if(!f){ toast('先选 CSV 文件'); return; }
+  const r=new FileReader(); r.onload=()=>{
+    try{
+      const lines=r.result.split(/\r?\n/).filter(l=>l.trim());
+      const head=lines[0].split(',').map(h=>h.trim());
+      const map={}; head.forEach((h,i)=>{ const k=h.toLowerCase(); if(k.includes('收')||k.includes('支')||k.includes('类型')) map.type=i; if(k.includes('金额')||k.includes('钱')) map.amount=i; if(k.includes('分类')||k.includes('类别')) map.cat=i; if(k.includes('备注')||k.includes('说明')) map.note=i; if(k.includes('日期')||k.includes('时间')) map.date=i; });
+      let cnt=0;
+      for(let i=1;i<lines.length;i++){ const c=lines[i].split(','); const raw=c[map.amount]; if(!raw) continue;
+        const amount=Math.abs(parseFloat(raw)); const typeTxt=c[map.type]||''; const type=/(收|in|收入)/i.test(typeTxt)?'in':'out';
+        S.money.txns.push({id:uid(),type,amount,cat:c[map.cat]||'',note:c[map.note]||'',date:c[map.date]||todayStr()}); cnt++; }
+      save(); renderMoney(); toast('导入 '+cnt+' 条');
+    }catch(e){ toast('CSV 解析失败'); }
+  }; r.readAsText(f);
+});
+
+/* ===================== 基金预设（贴近支付宝常见基金，可选项而非手填） ===================== */
+const FUND_OPTIONS = [
+  {name:'易方达蓝筹精选混合',code:'005827'},
+  {name:'中欧医疗健康混合C',code:'003096'},
+  {name:'招商中证白酒指数',code:'161725'},
+  {name:'易方达消费行业股票',code:'110022'},
+  {name:'华夏成长混合',code:'000001'},
+  {name:'广发稳健增长混合',code:'270002'},
+  {name:'富国天惠成长混合',code:'161005'},
+  {name:'兴全合润混合',code:'163406'},
+  {name:'景顺长城新兴成长',code:'260108'},
+  {name:'天弘余额宝货币',code:'000198'},
+  {name:'诺安成长混合',code:'320007'},
+  {name:'嘉实沪深300ETF联接',code:'160706'}
+];
+function initFundSelect(){
+  const sel=$('#fundName');
+  FUND_OPTIONS.forEach(f=>{ const o=document.createElement('option'); o.value=f.name; o.textContent=f.name+'（'+f.code+'）'; sel.appendChild(o); });
+  sel.addEventListener('change',()=>{ const f=FUND_OPTIONS.find(x=>x.name===sel.value); if(f) $('#fundCode').value=f.code; });
+}
+
+/* ===================== 基金 ===================== */
+function renderFund(){
+  const list=S.funds;
+  let totalMV=0,totalCost=0;
+  const html=list.map(f=>{ const mv=f.shares*f.price; const cost=f.shares*f.cost; const profit=mv-cost; totalMV+=mv; totalCost+=cost;
+    const pct=cost>0?(profit/cost*100):0;
+    return `<div class="txn"><div class="info"><div><b>${f.name}</b> <span class="c">${f.code||''}</span></div><div class="c">份额 ${f.shares} · 净值 ${f.price} · 成本 ${f.cost}</div></div>
+      <div class="amt ${profit>=0?'in':'out'}">${profit>=0?'+':'-'}¥${Math.abs(profit).toFixed(2)}<br><span class="c">${pct.toFixed(1)}%</span></div>
+      <button class="del" data-del="${f.id}">🗑</button></div>`;
+  }).join('');
+  $('#fundList').innerHTML = (list.length?html:'<div class="empty">还没有基金，添加一只吧～</div>') +
+    (list.length?`<div class="sum-box" style="margin-top:10px"><div class="v">¥${(totalMV-totalCost).toFixed(2)}</div><div class="l">持仓总收益</div></div>`:'');
+  $$('#fundList [data-del]').forEach(b=>b.addEventListener('click',()=>{ S.funds=S.funds.filter(y=>y.id!==b.dataset.del); save(); renderFund(); }));
+}
+$('#addFund').addEventListener('click',()=>{
+  const name=$('#fundName').value.trim(); if(!name){ toast('填基金名'); return; }
+  S.funds.push({id:uid(),name,code:$('#fundCode').value.trim(),shares:parseFloat($('#fundShares').value)||0,cost:parseFloat($('#fundCost').value)||0,price:parseFloat($('#fundPrice').value)||0});
+  save(); $('#fundName').value=''; $('#fundCode').value=''; $('#fundShares').value=''; $('#fundCost').value=''; $('#fundPrice').value=''; renderFund(); toast('已添加');
+});
+
+/* ===================== 资讯 ===================== */
+const NEWS = [
+  {date:'2026-08-23',title:'AI 助手走进日常：本地化的个人工作台成新趋势',summary:'越来越多用户倾向于把日程、学习、记账等集中到一个离线可用的小工具里，隐私与便捷兼得。'},
+  {date:'2026-08-22',title:'研究显示：每天 20 分钟阅读显著提升专注力',summary:'一项长期追踪表明，规律阅读者在工作记忆与情绪管理上表现更优。'},
+  {date:'2026-08-21',title:'护颈指南更新：每 45 分钟活动一次最有效',summary:'康复科专家建议，久坐人群应设置定时提醒，结合拉伸缓解颈椎压力。'},
+  {date:'2026-08-20',title:'极简理财：记账是理财的第一步',summary:'从记录每一笔支出开始，逐步建立预算与存钱目标，比盲目投资更稳妥。'},
+  {date:'2026-08-19',title:'每天一杯水：规律补水也能提升专注力',summary:'研究显示，规律饮水有助于维持注意力与新陈代谢，搭配定时提醒效果更好。'},
+  {date:'2026-08-18',title:'播客崛起：通勤时间也能自我成长',summary:'知识类播客用户持续增长，成为碎片化学习的重要载体。'}
+];
+const PODCASTS = [
+  {name:'故事FM',platform:'小宇宙',theme:'纪实·人生',desc:'用声音记录真实人生',link:'https://www.xiaoyuzhoufm.com/search?q='+encodeURIComponent('故事FM'),icon:'🎙'},
+  {name:'忽左忽右',platform:'小宇宙',theme:'社会·文化',desc:'聊点有意思的社会文化现象',link:'https://www.xiaoyuzhoufm.com/search?q='+encodeURIComponent('忽左忽右'),icon:'💬'},
+  {name:'声东击西',platform:'小宇宙',theme:'科技·全球',desc:'科技如何改变世界',link:'https://www.xiaoyuzhoufm.com/search?q='+encodeURIComponent('声东击西'),icon:'🌐'},
+  {name:'知行小酒馆',platform:'小宇宙',theme:'投资·理财',desc:'普通人的投资思考',link:'https://www.xiaoyuzhoufm.com/search?q='+encodeURIComponent('知行小酒馆'),icon:'📈'},
+  {name:'硅谷101',platform:'小宇宙',theme:'科技·商业',desc:'拆解全球科技与商业趋势',link:'https://www.xiaoyuzhoufm.com/search?q='+encodeURIComponent('硅谷101'),icon:'🚀'},
+  {name:'日谈公园',platform:'小宇宙',theme:'生活·闲聊',desc:'轻松聊生活与文化',link:'https://www.xiaoyuzhoufm.com/search?q='+encodeURIComponent('日谈公园'),icon:'🌱'}
+];
+let newsTab='news';
+function renderNews(){
+  $$('#newsTabs .en-tab').forEach(b=>b.classList.toggle('active',b.dataset.tab===newsTab));
+  const c=$('#newsContent');
+  if(newsTab==='news'){
+    const picks=[]; const start=DAY_IDX%NEWS.length; for(let i=0;i<4;i++) picks.push(NEWS[(start+i)%NEWS.length]);
+    c.innerHTML=picks.map(n=>`<div class="news-item"><div class="nt"><span>${n.title}</span><span class="nd">${n.date}</span></div><div class="sub" style="color:var(--sub);margin:6px 0;font-size:13px">${n.summary}</div><a class="btn sm ghost" href="https://www.baidu.com/s?wd=${encodeURIComponent(n.title)}" target="_blank" rel="noopener">🔗 联网搜索原文</a></div>`).join('');
+  } else {
+    c.innerHTML='<div class="grid grid-2">'+PODCASTS.map(p=>`<div class="podcast"><div class="pf">${p.icon}</div><div style="font-weight:700">${p.name}</div><div class="chip">${p.platform} · ${p.theme}</div><div class="sub" style="color:var(--sub);font-size:12px">${p.desc}</div><a class="btn sm" href="${p.link}" target="_blank" rel="noopener">▶ 收听</a></div>`).join('')+'</div>';
+  }
+}
+$$('#newsTabs .en-tab').forEach(b=>b.addEventListener('click',()=>{ newsTab=b.dataset.tab; renderNews(); }));
+
+/* ===================== 设置 ===================== */
+function renderSettings(){
+  $('#diaryPw').value='';
+}
+$('#savePw').addEventListener('click',()=>{ const v=$('#diaryPw').value; if(!v){ toast('密码不能为空'); return; } S.diaryPassword=v; S.unlocked=false; // 仅把仍是明文的日记加密（已是 base64 的跳过）
+  S.diary.forEach(d=>{ try{ atob(d.body); }catch(e){ d.body=encrypt(d.body,v); } }); save(); renderSettings(); renderDiary(); toast('密码已设置'); });
+$('#clearPw').addEventListener('click',()=>{ if(!confirm('确定清除日记密码？已加密日记将无法恢复，建议先解锁导出。')) return; S.diaryPassword=''; S.unlocked=false; save(); renderSettings(); renderDiary(); toast('已清除'); });
+$('#exportData').addEventListener('click',()=>{ const blob=new Blob([JSON.stringify(S,null,2)],{type:'application/json'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='工作台备份_'+todayStr()+'.json'; a.click(); toast('已导出'); });
+$('#importData').addEventListener('click',()=>$('#importFile').click());
+$('#importFile').addEventListener('change',e=>{ const f=e.target.files[0]; if(!f) return; const r=new FileReader(); r.onload=()=>{ try{ const data=JSON.parse(r.result); Object.assign(S,data); save(); ensure(); toast('导入成功，已刷新'); showPage('home'); }catch(err){ toast('文件格式不对'); } }; r.readAsText(f); });
+$('#clearAll').addEventListener('click',()=>{ if(!confirm('清空全部数据不可恢复，确定？')) return; localStorage.removeItem(KEY); S=load(); ensure(); save(); toast('已清空'); showPage('home'); });
+
+/* ===================== 通用 ===================== */
+function escapeHTML(s){ return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+/* 首次进入提示 */
+if(!localStorage.getItem('wb_welcomed')){
+  setTimeout(()=>toast('欢迎使用 🍊 双击文件即可使用，数据都存在本机'),400);
+  localStorage.setItem('wb_welcomed','1');
+}
+
+/* 初始化 */
+initFundSelect();
+showPage('home');
+renderEnglish();
+
+/* PWA：仅在本地 http 服务器(127.0.0.1/localhost)下注册 Service Worker，激活离线缓存与"安装为应用" */
+if(location.protocol!=='file:'){
+  if('serviceWorker' in navigator){ window.addEventListener('load',()=>{ navigator.serviceWorker.register('sw.js').catch(()=>{}); }); }
+}
+</script>
+</body>
+</html>
